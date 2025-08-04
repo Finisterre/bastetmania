@@ -243,7 +243,8 @@ export default function Home() {
         </span>
       ),
       children: null
-    }
+    },
+
   ]
 
   return (

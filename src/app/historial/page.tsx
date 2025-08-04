@@ -12,6 +12,7 @@ const { RangePicker } = DatePicker
 interface VentaConProducto extends Venta {
   producto_nombre: string
   producto_precio: number
+  es_ticket?: boolean
 }
 
 export default function HistorialVentas() {
@@ -31,15 +32,10 @@ export default function HistorialVentas() {
 
       console.log('Cargando ventas desde:', fechaInicioQuery.format('YYYY-MM-DD'), 'hasta:', fechaFinQuery.format('YYYY-MM-DD'))
 
+      // Obtener todas las ventas del período
       const { data: ventasData, error: ventasError } = await supabase
         .from('ventas')
-        .select(`
-          *,
-          productos:producto_id (
-            nombre,
-            precio
-          )
-        `)
+        .select('*')
         .gte('fecha_venta', fechaInicioQuery.toISOString())
         .lte('fecha_venta', fechaFinQuery.toISOString())
         .order('fecha_venta', { ascending: false })
@@ -49,12 +45,46 @@ export default function HistorialVentas() {
         throw ventasError
       }
 
-      // Transformar datos para incluir información del producto
-      const ventasConProducto = ventasData?.map(venta => ({
-        ...venta,
-        producto_nombre: venta.productos?.nombre || 'Producto no encontrado',
-        producto_precio: venta.productos?.precio || 0
-      })) || []
+      // Separar ventas de productos y tickets
+      const ventasProductos = ventasData?.filter(v => !v.es_ticket && v.producto_id) || []
+      const ventasTickets = ventasData?.filter(v => v.es_ticket) || []
+
+      // Obtener información de productos para las ventas de productos
+      let productosInfo: { [key: number]: { nombre: string, precio: number } } = {}
+      
+      if (ventasProductos.length > 0) {
+        const productoIds = [...new Set(ventasProductos.map(v => v.producto_id!))]
+        
+        const { data: productosData, error: productosError } = await supabase
+          .from('productos')
+          .select('id, nombre, precio')
+          .in('id', productoIds)
+
+        if (!productosError && productosData) {
+          productosInfo = productosData.reduce((acc, producto) => {
+            acc[producto.id] = { nombre: producto.nombre, precio: producto.precio }
+            return acc
+          }, {} as { [key: number]: { nombre: string, precio: number } })
+        }
+      }
+
+      // Combinar y transformar todos los datos
+      const ventasConProducto = ventasData?.map(venta => {
+        if (venta.es_ticket) {
+          return {
+            ...venta,
+            producto_nombre: 'Entrada para Show',
+            producto_precio: venta.precio_unitario
+          }
+        } else {
+          const productoInfo = productosInfo[venta.producto_id!]
+          return {
+            ...venta,
+            producto_nombre: productoInfo ? productoInfo.nombre : 'Producto no encontrado',
+            producto_precio: productoInfo ? productoInfo.precio : venta.precio_unitario
+          }
+        }
+      }) || []
 
       setVentas(ventasConProducto)
       console.log('Ventas cargadas:', ventasConProducto.length)
@@ -117,7 +147,8 @@ export default function HistorialVentas() {
   const totalVentasDigital = ventas.filter(v => v.modo_pago === 'digital').reduce((sum, v) => sum + v.total, 0)
   const totalVentas = totalVentasEfectivo + totalVentasDigital
   const cantidadVentas = ventas.length
-  const cantidadProductos = ventas.reduce((sum, v) => sum + v.cantidad, 0)
+  const cantidadProductos = ventas.filter(v => !v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
+  const cantidadTickets = ventas.filter(v => v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
 
   // Configurar columnas de la tabla
   const columns = [
@@ -339,7 +370,7 @@ export default function HistorialVentas() {
               Ventas del {fechaInicio.format('DD/MM/YYYY')} al {fechaFin.format('DD/MM/YYYY')}
             </h3>
             <p className="text-gray-600">
-              {cantidadVentas} ventas • {cantidadProductos} productos vendidos • ${totalVentas.toFixed(2)} total
+              {cantidadVentas} ventas • {cantidadProductos} productos • {cantidadTickets} entradas • ${totalVentas.toFixed(2)} total
             </p>
           </div>
 

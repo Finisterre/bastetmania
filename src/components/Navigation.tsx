@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Menu, Button, Drawer } from 'antd'
-import { ShoppingCartOutlined, HistoryOutlined, HomeOutlined, MenuOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons'
+import { ShoppingCartOutlined, HistoryOutlined, HomeOutlined, MenuOutlined, CloseOutlined, SettingOutlined, CreditCardOutlined } from '@ant-design/icons'
 import { usePathname } from 'next/navigation'
 
 export default function Navigation() {
@@ -17,6 +17,15 @@ export default function Navigation() {
       onClick: () => {
         setDrawerVisible(false)
         window.location.href = '/'
+      }
+    },
+    {
+      key: '/tickets',
+      icon: <CreditCardOutlined />,
+      label: 'Entradas',
+      onClick: () => {
+        setDrawerVisible(false)
+        window.location.href = '/tickets'
       }
     },
     {
