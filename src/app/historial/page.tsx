@@ -195,6 +195,12 @@ export default function HistorialVentas() {
             icon={<ReloadOutlined />} 
             onClick={() => cargarVentas()}
             loading={loading}
+            style={{
+              backgroundColor: '#52c41a',
+              borderColor: '#52c41a',
+              color: 'white',
+              fontWeight: '500'
+            }}
           >
             Actualizar
           </Button>
@@ -226,16 +232,52 @@ export default function HistorialVentas() {
             </Col>
             <Col span={12}>
               <div className="flex gap-2">
-                <Button onClick={handleHoy} type={dayjs().isSame(fechaInicio, 'day') ? 'primary' : 'default'}>
+                <Button 
+                  onClick={handleHoy} 
+                  type={dayjs().isSame(fechaInicio, 'day') ? 'primary' : 'default'}
+                  style={{
+                    backgroundColor: dayjs().isSame(fechaInicio, 'day') ? '#1890ff' : '#ffffff',
+                    borderColor: dayjs().isSame(fechaInicio, 'day') ? '#1890ff' : '#d9d9d9',
+                    color: dayjs().isSame(fechaInicio, 'day') ? 'white' : '#000000',
+                    fontWeight: '500'
+                  }}
+                >
                   Hoy
                 </Button>
-                <Button onClick={handleAyer} type={dayjs().subtract(1, 'day').isSame(fechaInicio, 'day') ? 'primary' : 'default'}>
+                <Button 
+                  onClick={handleAyer} 
+                  type={dayjs().subtract(1, 'day').isSame(fechaInicio, 'day') ? 'primary' : 'default'}
+                  style={{
+                    backgroundColor: dayjs().subtract(1, 'day').isSame(fechaInicio, 'day') ? '#1890ff' : '#ffffff',
+                    borderColor: dayjs().subtract(1, 'day').isSame(fechaInicio, 'day') ? '#1890ff' : '#d9d9d9',
+                    color: dayjs().subtract(1, 'day').isSame(fechaInicio, 'day') ? 'white' : '#000000',
+                    fontWeight: '500'
+                  }}
+                >
                   Ayer
                 </Button>
-                <Button onClick={handleEstaSemana} type={dayjs().startOf('week').isSame(fechaInicio, 'day') ? 'primary' : 'default'}>
+                <Button 
+                  onClick={handleEstaSemana} 
+                  type={dayjs().startOf('week').isSame(fechaInicio, 'day') ? 'primary' : 'default'}
+                  style={{
+                    backgroundColor: dayjs().startOf('week').isSame(fechaInicio, 'day') ? '#1890ff' : '#ffffff',
+                    borderColor: dayjs().startOf('week').isSame(fechaInicio, 'day') ? '#1890ff' : '#d9d9d9',
+                    color: dayjs().startOf('week').isSame(fechaInicio, 'day') ? 'white' : '#000000',
+                    fontWeight: '500'
+                  }}
+                >
                   Esta Semana
                 </Button>
-                <Button onClick={handleEsteMes} type={dayjs().startOf('month').isSame(fechaInicio, 'day') ? 'primary' : 'default'}>
+                <Button 
+                  onClick={handleEsteMes} 
+                  type={dayjs().startOf('month').isSame(fechaInicio, 'day') ? 'primary' : 'default'}
+                  style={{
+                    backgroundColor: dayjs().startOf('month').isSame(fechaInicio, 'day') ? '#1890ff' : '#ffffff',
+                    borderColor: dayjs().startOf('month').isSame(fechaInicio, 'day') ? '#1890ff' : '#d9d9d9',
+                    color: dayjs().startOf('month').isSame(fechaInicio, 'day') ? 'white' : '#000000',
+                    fontWeight: '500'
+                  }}
+                >
                   Este Mes
                 </Button>
               </div>

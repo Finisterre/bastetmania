@@ -499,13 +499,19 @@ export default function AdminProductos() {
                 <Button onClick={() => setModalVisible(false)}>
                   Cancelar
                 </Button>
-                <Button
-                  type="primary"
-                  htmlType="submit"
-                  loading={submitLoading}
-                >
-                  {editingProduct ? 'Actualizar' : 'Crear'} Producto
-                </Button>
+                                 <Button
+                   type="primary"
+                   htmlType="submit"
+                   loading={submitLoading}
+                   style={{
+                     backgroundColor: '#1890ff',
+                     borderColor: '#1890ff',
+                     color: 'white',
+                     fontWeight: '500'
+                   }}
+                 >
+                   {editingProduct ? 'Actualizar' : 'Crear'} Producto
+                 </Button>
               </div>
             </Form.Item>
           </Form>
