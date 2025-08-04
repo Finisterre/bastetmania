@@ -144,6 +144,7 @@ export default function AdminProductos() {
       message.error('No hay ticket disponible')
       return
     }
+    console.log('Abriendo modal de edición de ticket:', ticket)
     formTicket.setFieldsValue({ 
       precio: ticket.precio,
       descripcion: ticket.descripcion || ''
@@ -156,6 +157,7 @@ export default function AdminProductos() {
 
     try {
       setTicketLoading(true)
+      console.log('Actualizando ticket con valores:', values)
 
       const { error: updateError } = await supabase
         .from('tickets')
@@ -165,14 +167,18 @@ export default function AdminProductos() {
         })
         .eq('id', ticket.id)
 
-      if (updateError) throw updateError
+      if (updateError) {
+        console.error('Error de Supabase:', updateError)
+        throw updateError
+      }
 
       message.success('Precio de entrada actualizado correctamente')
       setModalTicketVisible(false)
       cargarTicket() // Recargar información del ticket
     } catch (error) {
       console.error('Error actualizando ticket:', error)
-      message.error('Error al actualizar el ticket')
+      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el ticket'
+      message.error(errorMessage)
     } finally {
       setTicketLoading(false)
     }
@@ -245,7 +251,7 @@ export default function AdminProductos() {
       title: 'Precio',
       dataIndex: 'precio',
       key: 'precio',
-      render: (precio: number) => <span className="text-green-600 font-semibold">${precio.toFixed(2)}</span>,
+             render: (precio: number) => <span className="text-green-600 font-semibold">${precio.toLocaleString('es-AR')}</span>,
       sorter: (a: Producto, b: Producto) => a.precio - b.precio,
     },
          {
@@ -466,33 +472,17 @@ export default function AdminProductos() {
             <Card>
               <div className="text-center">
                 <div className="text-2xl text-purple-600 mb-2">🎫</div>
-                <div className="text-xl font-bold">
-                  {ticket ? `$${ticket.precio.toFixed(2)}` : 'N/A'}
-                </div>
+                                 <div className="text-xl font-bold">
+                   {ticket ? `$${ticket.precio.toLocaleString('es-AR')}` : 'N/A'}
+                 </div>
                 <div className="text-sm text-gray-600">Precio Entrada</div>
               </div>
             </Card>
           </Col>
         </Row>
-
-        {/* Tabla de productos */}
-        <Card>
-          <Table
-            columns={columns}
-            dataSource={productos}
-            rowKey="id"
-            pagination={{
-              pageSize: 15,
-              showSizeChanger: true,
-              showQuickJumper: true,
-              showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} productos`,
-            }}
-            scroll={{ x: 1200 }}
-          />
-        </Card>
-
-        {/* Sección de Gestión de Entradas */}
-        <Card className="mt-6">
+        <Row gutter={16} className="mb-6">
+          {/* Sección de Gestión de Entradas */}
+          <Card className="mt-6  mx-auto">
           <div className="flex justify-between items-center mb-4">
             <div>
               <h2 className="text-xl font-bold text-gray-800">🎫 Gestión de Entradas</h2>
@@ -519,7 +509,7 @@ export default function AdminProductos() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <p className="text-sm text-gray-600">Precio Actual</p>
-                  <p className="text-2xl font-bold text-purple-600">${ticket.precio.toFixed(2)}</p>
+                                     <p className="text-2xl font-bold text-purple-600">${ticket.precio.toLocaleString('es-AR')}</p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-600">Descripción</p>
@@ -542,6 +532,27 @@ export default function AdminProductos() {
             />
           )}
         </Card>
+   </Row>
+        {/* Tabla de productos */}
+        <Card>
+          <Row>
+            <h1 className="text-2xl font-bold text-gray-800">Productos</h1>
+          </Row>
+          <Table
+            columns={columns}
+            dataSource={productos}
+            rowKey="id"
+            pagination={{
+              pageSize: 15,
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) => `${range[0]}-${range[1]} de ${total} productos`,
+            }}
+            scroll={{ x: 1200 }}
+          />
+        </Card>
+
+      
 
         {/* Modal para agregar/editar producto */}
         <Modal
@@ -578,7 +589,15 @@ export default function AdminProductos() {
                   name="precio"
                   rules={[
                     { required: true, message: 'Por favor ingrese el precio' },
-                    { type: 'number', min: 0, message: 'El precio debe ser mayor a 0' }
+                    { 
+                      validator: (_, value) => {
+                        const numValue = Number(value)
+                        if (isNaN(numValue) || numValue < 0) {
+                          return Promise.reject(new Error('El precio debe ser mayor a 0'))
+                        }
+                        return Promise.resolve()
+                      }
+                    }
                   ]}
                 >
                   <InputNumber
@@ -591,20 +610,28 @@ export default function AdminProductos() {
                 </Form.Item>
               </Col>
                              <Col span={12}>
-                 <Form.Item
-                   label="Stock Inicial"
-                   name="stock"
-                   rules={[
-                     { required: true, message: 'Por favor ingrese el stock' },
-                     { type: 'number', min: 0, message: 'El stock debe ser mayor o igual a 0' }
-                   ]}
-                 >
-                                       <InputNumber
+                                   <Form.Item
+                    label="Stock Inicial"
+                    name="stock"
+                    rules={[
+                      { required: true, message: 'Por favor ingrese el stock' },
+                      { 
+                        validator: (_, value) => {
+                          const numValue = Number(value)
+                          if (isNaN(numValue) || numValue < 0) {
+                            return Promise.reject(new Error('El stock debe ser mayor o igual a 0'))
+                          }
+                          return Promise.resolve()
+                        }
+                      }
+                    ]}
+                  >
+                    <InputNumber
                       placeholder="0"
                       min={0}
                       style={{ width: '100%' }}
                     />
-                 </Form.Item>
+                  </Form.Item>
                </Col>
             </Row>
 
@@ -673,7 +700,7 @@ export default function AdminProductos() {
           width={500}
         >
           <div className="mb-4 p-4 bg-purple-50 rounded">
-            <p><strong>Precio actual:</strong> ${ticket?.precio.toFixed(2)}</p>
+                         <p><strong>Precio actual:</strong> ${ticket?.precio.toLocaleString('es-AR')}</p>
             <p><strong>Tipo:</strong> Entrada general</p>
             {ticket?.descripcion && (
               <p><strong>Descripción actual:</strong> {ticket.descripcion}</p>
@@ -690,12 +717,20 @@ export default function AdminProductos() {
               name="precio"
               rules={[
                 { required: true, message: 'Por favor ingrese el nuevo precio' },
-                { type: 'number', min: 0, message: 'El precio debe ser mayor a 0' }
+                { 
+                  validator: (_, value) => {
+                    const numValue = Number(value)
+                    if (isNaN(numValue) || numValue < 0.01) {
+                      return Promise.reject(new Error('El precio debe ser mayor a 0'))
+                    }
+                    return Promise.resolve()
+                  }
+                }
               ]}
             >
               <Input 
                 type="number" 
-                min={0} 
+                min={0.01} 
                 step={0.01}
                 addonBefore="$"
                 placeholder="0.00"

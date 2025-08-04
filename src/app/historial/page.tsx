@@ -176,13 +176,13 @@ export default function HistorialVentas() {
       title: 'Precio Unit.',
       dataIndex: 'precio_unitario',
       key: 'precio_unitario',
-      render: (precio: number) => `$${precio.toFixed(2)}`,
+             render: (precio: number) => `$${precio.toLocaleString('es-AR')}`,
     },
     {
       title: 'Total',
       dataIndex: 'total',
       key: 'total',
-      render: (total: number) => <strong className="text-green-600">${total.toFixed(2)}</strong>,
+             render: (total: number) => <strong className="text-green-600">${total.toLocaleString('es-AR')}</strong>,
       sorter: (a: VentaConProducto, b: VentaConProducto) => a.total - b.total,
     },
     {
@@ -327,7 +327,7 @@ export default function HistorialVentas() {
                 value={totalVentasEfectivo}
                 prefix={<DollarOutlined />}
                 valueStyle={{ color: '#3f8600' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Card>
           </Col>
@@ -338,7 +338,7 @@ export default function HistorialVentas() {
                 value={totalVentasDigital}
                 prefix={<CreditCardOutlined />}
                 valueStyle={{ color: '#1890ff' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Card>
           </Col>
@@ -349,7 +349,7 @@ export default function HistorialVentas() {
                 value={totalVentas}
                 prefix={<ShoppingCartOutlined />}
                 valueStyle={{ color: '#722ed1' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Card>
           </Col>
@@ -372,7 +372,7 @@ export default function HistorialVentas() {
               Ventas del {fechaInicio.format('DD/MM/YYYY')} al {fechaFin.format('DD/MM/YYYY')}
             </h3>
                          <p className="text-gray-600">
-               {cantidadVentas} ventas • {cantidadProductos} productos • {cantidadTickets} entradas • {cantidadBonanza} bonanza • ${totalVentas.toFixed(2)} total
+               {cantidadVentas} ventas • {cantidadProductos} productos • {cantidadTickets} entradas • {cantidadBonanza} bonanza • ${totalVentas.toLocaleString('es-AR')} total
              </p>
           </div>
 

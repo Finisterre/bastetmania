@@ -286,7 +286,7 @@ export default function Home() {
         )}
         
         {/* Estadísticas del día */}
-        <Card className="mb-6">
+        {/* <Card className="mb-6">
           <div className="text-center mb-4">
             <h2 className="text-xl font-semibold text-gray-700">
               Estadísticas del Día - {dayjs().format('DD/MM/YYYY')}
@@ -299,7 +299,7 @@ export default function Home() {
                 value={estadisticasHoy.totalEfectivo}
                 prefix={<DollarOutlined />}
                 valueStyle={{ color: '#3f8600' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
             <Col span={8}>
@@ -308,7 +308,7 @@ export default function Home() {
                 value={estadisticasHoy.totalDigital}
                 prefix={<CreditCardOutlined />}
                 valueStyle={{ color: '#1890ff' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
             <Col span={8}>
@@ -317,11 +317,11 @@ export default function Home() {
                 value={estadisticasHoy.totalGeneral}
                 prefix={<ShoppingCartOutlined />}
                 valueStyle={{ color: '#722ed1' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
           </Row>
-        </Card>
+        </Card> */}
 
         {/* Filtros y Búsqueda */}
         <Card className="mb-6">
@@ -411,7 +411,7 @@ export default function Home() {
               >
                 <div className="space-y-2">
                   <p className="text-lg font-semibold text-green-600">
-                    ${producto.precio.toFixed(2)}
+                    ${producto.precio.toLocaleString('es-AR')}
                   </p>
                   <p className="text-sm text-gray-600">
                     Stock: <span className={producto.stock === 0 ? 'text-red-500' : 'text-green-500'}>
@@ -421,10 +421,10 @@ export default function Home() {
                   {producto.descripcion && (
                     <p className="text-sm text-gray-500">{producto.descripcion}</p>
                   )}
-                  <div className="text-xs text-gray-400 space-y-1">
-                    <p>Ventas Efectivo (Hoy): ${producto.pago_efectivo.toFixed(2)}</p>
-                    <p>Ventas Digital (Hoy): ${producto.pago_digital.toFixed(2)}</p>
-                  </div>
+                  {/* <div className="text-xs text-gray-400 space-y-1">
+                    <p>Ventas Efectivo (Hoy): ${producto.pago_efectivo.toLocaleString('es-AR')}</p>
+                    <p>Ventas Digital (Hoy): ${producto.pago_digital.toLocaleString('es-AR')}</p>
+                  </div> */}
                 </div>
               </Card>
             ))}
@@ -447,7 +447,7 @@ export default function Home() {
               initialValues={{ cantidad: 1, modo_pago: 'efectivo' }}
             >
               <div className="mb-4 p-4 bg-gray-50 rounded">
-                <p><strong>Precio:</strong> ${selectedProduct.precio.toFixed(2)}</p>
+                <p><strong>Precio:</strong> ${selectedProduct.precio.toLocaleString('es-AR')}</p>
                 <p><strong>Stock disponible:</strong> {selectedProduct.stock} unidades</p>
                 <p><strong>Categoría:</strong> {selectedProduct.categoria}</p>
                 {selectedProduct.descripcion && (
@@ -460,7 +460,18 @@ export default function Home() {
                 name="cantidad"
                 rules={[
                   { required: true, message: 'Por favor ingrese la cantidad' },
-                  { type: 'number', min: 1, max: selectedProduct.stock, message: `Máximo ${selectedProduct.stock} unidades` }
+                  { 
+                    validator: (_, value) => {
+                      const numValue = Number(value)
+                      if (isNaN(numValue) || numValue < 1) {
+                        return Promise.reject(new Error('La cantidad debe ser mayor a 0'))
+                      }
+                      if (numValue > selectedProduct.stock) {
+                        return Promise.reject(new Error(`Máximo ${selectedProduct.stock} unidades`))
+                      }
+                      return Promise.resolve()
+                    }
+                  }
                 ]}
               >
                 <Input type="number" min={1} max={selectedProduct.stock} />

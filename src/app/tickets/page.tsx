@@ -224,7 +224,7 @@ export default function TicketsPage() {
                 value={estadisticasHoy.totalEfectivo}
                 prefix={<DollarOutlined />}
                 valueStyle={{ color: '#3f8600' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
             <Col span={6}>
@@ -233,7 +233,7 @@ export default function TicketsPage() {
                 value={estadisticasHoy.totalDigital}
                 prefix={<CreditCardOutlined />}
                 valueStyle={{ color: '#1890ff' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
             <Col span={6}>
@@ -241,7 +241,7 @@ export default function TicketsPage() {
                 title="Total General (Hoy)"
                 value={estadisticasHoy.totalGeneral}
                 valueStyle={{ color: '#722ed1' }}
-                precision={2}
+                formatter={(value) => value?.toLocaleString('es-AR')}
               />
             </Col>
             <Col span={6}>
@@ -263,7 +263,7 @@ export default function TicketsPage() {
               {ticket.descripcion || 'Entrada para el Show'}
             </h2>
             <p className="text-4xl font-bold text-purple-600 mb-6">
-              ${ticket.precio.toFixed(2)}
+              ${ticket.precio.toLocaleString('es-AR')}
             </p>
             <p className="text-gray-600 mb-6">
               Entrada general para el evento
@@ -297,7 +297,7 @@ export default function TicketsPage() {
            width={500}
          >
           <div className="mb-4 p-4 bg-purple-50 rounded">
-            <p><strong>Precio por entrada:</strong> ${ticket.precio.toFixed(2)}</p>
+            <p><strong>Precio por entrada:</strong> ${ticket.precio.toLocaleString('es-AR')}</p>
             <p><strong>Tipo:</strong> Entrada general</p>
             {ticket.descripcion && (
               <p><strong>Descripción:</strong> {ticket.descripcion}</p>
@@ -315,10 +315,18 @@ export default function TicketsPage() {
               name="cantidad"
               rules={[
                 { required: true, message: 'Por favor ingrese la cantidad' },
-                { type: 'number', min: 1, max: 10, message: 'Máximo 10 entradas por compra' }
+                { 
+                  validator: (_, value) => {
+                    const numValue = Number(value)
+                    if (isNaN(numValue) || numValue < 1) {
+                      return Promise.reject(new Error('La cantidad debe ser mayor a 0'))
+                    }
+                    return Promise.resolve()
+                  }
+                }
               ]}
             >
-              <Input type="number" min={1} max={10} />
+              <Input type="number" min={1} />
             </Form.Item>
 
                          <Form.Item
