@@ -142,13 +142,14 @@ export default function HistorialVentas() {
     cargarVentas(inicioMes, finMes)
   }
 
-  // Calcular estadísticas
-  const totalVentasEfectivo = ventas.filter(v => v.modo_pago === 'efectivo').reduce((sum, v) => sum + v.total, 0)
-  const totalVentasDigital = ventas.filter(v => v.modo_pago === 'digital').reduce((sum, v) => sum + v.total, 0)
-  const totalVentas = totalVentasEfectivo + totalVentasDigital
-  const cantidadVentas = ventas.length
-  const cantidadProductos = ventas.filter(v => !v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
-  const cantidadTickets = ventas.filter(v => v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
+     // Calcular estadísticas (excluyendo bonanza de los totales de ganancias)
+   const totalVentasEfectivo = ventas.filter(v => v.modo_pago === 'efectivo').reduce((sum, v) => sum + v.total, 0)
+   const totalVentasDigital = ventas.filter(v => v.modo_pago === 'digital').reduce((sum, v) => sum + v.total, 0)
+   const totalVentas = totalVentasEfectivo + totalVentasDigital
+     const cantidadVentas = ventas.length
+   const cantidadProductos = ventas.filter(v => !v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
+   const cantidadTickets = ventas.filter(v => v.es_ticket).reduce((sum, v) => sum + v.cantidad, 0)
+   const cantidadBonanza = ventas.filter(v => v.modo_pago === 'bonanza').reduce((sum, v) => sum + v.cantidad, 0)
 
   // Configurar columnas de la tabla
   const columns = [
@@ -185,19 +186,20 @@ export default function HistorialVentas() {
       sorter: (a: VentaConProducto, b: VentaConProducto) => a.total - b.total,
     },
     {
-      title: 'Modo Pago',
-      dataIndex: 'modo_pago',
-      key: 'modo_pago',
-      render: (modo: string) => (
-        <Tag color={modo === 'efectivo' ? 'green' : 'blue'}>
-          {modo === 'efectivo' ? 'Efectivo' : 'Digital'}
-        </Tag>
-      ),
-      filters: [
-        { text: 'Efectivo', value: 'efectivo' },
-        { text: 'Digital', value: 'digital' },
-      ],
-      onFilter: (value: boolean | React.Key, record: VentaConProducto) => record.modo_pago === value,
+             title: 'Modo Pago',
+       dataIndex: 'modo_pago',
+       key: 'modo_pago',
+       render: (modo: string) => {
+         const color = modo === 'efectivo' ? 'green' : modo === 'digital' ? 'blue' : 'orange'
+         const text = modo === 'efectivo' ? 'Efectivo' : modo === 'digital' ? 'Digital' : 'Bonanza'
+         return <Tag color={color}>{text}</Tag>
+       },
+       filters: [
+         { text: 'Efectivo', value: 'efectivo' },
+         { text: 'Digital', value: 'digital' },
+         { text: 'Bonanza', value: 'bonanza' },
+       ],
+       onFilter: (value: boolean | React.Key, record: VentaConProducto) => record.modo_pago === value,
     },
   ]
 
@@ -369,9 +371,9 @@ export default function HistorialVentas() {
             <h3 className="text-lg font-semibold">
               Ventas del {fechaInicio.format('DD/MM/YYYY')} al {fechaFin.format('DD/MM/YYYY')}
             </h3>
-            <p className="text-gray-600">
-              {cantidadVentas} ventas • {cantidadProductos} productos • {cantidadTickets} entradas • ${totalVentas.toFixed(2)} total
-            </p>
+                         <p className="text-gray-600">
+               {cantidadVentas} ventas • {cantidadProductos} productos • {cantidadTickets} entradas • {cantidadBonanza} bonanza • ${totalVentas.toFixed(2)} total
+             </p>
           </div>
 
           {ventas.length === 0 ? (

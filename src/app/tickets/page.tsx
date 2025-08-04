@@ -99,14 +99,15 @@ export default function TicketsPage() {
     setModalVisible(true)
   }
 
-  const handleVentaSubmit = async (values: { cantidad: number; modo_pago: 'efectivo' | 'digital' }) => {
+  const handleVentaSubmit = async (values: { cantidad: number; modo_pago: 'efectivo' | 'digital' | 'bonanza' }) => {
     if (!ticket) return
 
     try {
       setVentaLoading(true)
 
       const { cantidad, modo_pago } = values
-      const total = cantidad * ticket.precio
+      // Para "bonanza" el total es 0, para otros modos es precio * cantidad
+      const total = modo_pago === 'bonanza' ? 0 : cantidad * ticket.precio
 
       // Crear la venta de ticket
       const { error: ventaError } = await supabase
@@ -123,7 +124,11 @@ export default function TicketsPage() {
 
       if (ventaError) throw ventaError
 
-      message.success(`Compra de ${cantidad} entrada(s) realizada con éxito`)
+      const mensaje = modo_pago === 'bonanza' 
+        ? `${cantidad} entrada(s) entregada(s) gratis`
+        : `Compra de ${cantidad} entrada(s) realizada con éxito`
+      
+      message.success(mensaje)
       setModalVisible(false)
       cargarEstadisticasHoy() // Recargar estadísticas
     } catch (error) {
@@ -278,19 +283,19 @@ export default function TicketsPage() {
                  padding: '0 40px'
                }}
              >
-               Comprar Entrada
+               Vender Entrada
              </Button>
           </div>
         </Card>
 
         {/* Modal de Compra */}
-        <Modal
-          title="Comprar Entrada"
-          open={modalVisible}
-          onCancel={() => setModalVisible(false)}
-          footer={null}
-          width={500}
-        >
+                 <Modal
+           title="Vender/Entregar Entrada"
+           open={modalVisible}
+           onCancel={() => setModalVisible(false)}
+           footer={null}
+           width={500}
+         >
           <div className="mb-4 p-4 bg-purple-50 rounded">
             <p><strong>Precio por entrada:</strong> ${ticket.precio.toFixed(2)}</p>
             <p><strong>Tipo:</strong> Entrada general</p>
@@ -316,16 +321,17 @@ export default function TicketsPage() {
               <Input type="number" min={1} max={10} />
             </Form.Item>
 
-            <Form.Item
-              label="Modo de Pago"
-              name="modo_pago"
-              rules={[{ required: true, message: 'Por favor seleccione el modo de pago' }]}
-            >
-              <Select>
-                <Option value="efectivo">Efectivo</Option>
-                <Option value="digital">Digital</Option>
-              </Select>
-            </Form.Item>
+                         <Form.Item
+               label="Modo de Pago"
+               name="modo_pago"
+               rules={[{ required: true, message: 'Por favor seleccione el modo de pago' }]}
+             >
+               <Select>
+                 <Option value="efectivo">Efectivo</Option>
+                 <Option value="digital">Digital</Option>
+                 <Option value="bonanza">Bonanza (Gratis)</Option>
+               </Select>
+             </Form.Item>
 
             <Form.Item>
               <Button

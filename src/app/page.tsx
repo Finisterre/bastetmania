@@ -82,7 +82,7 @@ export default function Home() {
 
       console.log('Ventas del día obtenidas:', ventasData?.length || 0)
 
-      // Calcular totales por producto (solo del día)
+      // Calcular totales por producto (solo del día, excluyendo bonanza)
       const productosConVentas = productosData.map((producto: Producto) => {
         const ventasProducto = ventasData?.filter(v => v.producto_id === producto.id) || []
         const pagoEfectivo = ventasProducto
@@ -101,7 +101,7 @@ export default function Home() {
 
       setProductos(productosConVentas)
 
-      // Calcular estadísticas totales del día
+      // Calcular estadísticas totales del día (excluyendo bonanza)
       const totalEfectivo = ventasData?.filter(v => v.modo_pago === 'efectivo').reduce((sum, v) => sum + v.total, 0) || 0
       const totalDigital = ventasData?.filter(v => v.modo_pago === 'digital').reduce((sum, v) => sum + v.total, 0) || 0
       
@@ -132,14 +132,15 @@ export default function Home() {
     form.resetFields()
   }
 
-  const handleVentaSubmit = async (values: { cantidad: number; modo_pago: 'efectivo' | 'digital' }) => {
+  const handleVentaSubmit = async (values: { cantidad: number; modo_pago: 'efectivo' | 'digital' | 'bonanza' }) => {
     if (!selectedProduct) return
 
     try {
       setVentaLoading(true)
 
       const { cantidad, modo_pago } = values
-      const total = cantidad * selectedProduct.precio
+      // Para "bonanza" el total es 0, para otros modos es precio * cantidad
+      const total = modo_pago === 'bonanza' ? 0 : cantidad * selectedProduct.precio
 
       // Verificar stock
       if (cantidad > selectedProduct.stock) {
@@ -169,7 +170,11 @@ export default function Home() {
 
       if (stockError) throw stockError
 
-      message.success('Venta realizada con éxito')
+      const mensaje = modo_pago === 'bonanza' 
+        ? `${cantidad} ${selectedProduct.nombre} entregado(s) gratis`
+        : 'Venta realizada con éxito'
+      
+      message.success(mensaje)
       setModalVisible(false)
       cargarProductos() // Recargar productos para actualizar stock y estadísticas
     } catch (error) {
@@ -427,13 +432,13 @@ export default function Home() {
         )}
 
         {/* Modal de Venta */}
-        <Modal
-          title={`Vender: ${selectedProduct?.nombre}`}
-          open={modalVisible}
-          onCancel={() => setModalVisible(false)}
-          footer={null}
-          width={500}
-        >
+                 <Modal
+           title={`Vender/Entregar: ${selectedProduct?.nombre}`}
+           open={modalVisible}
+           onCancel={() => setModalVisible(false)}
+           footer={null}
+           width={500}
+         >
           {selectedProduct && (
             <Form
               form={form}
@@ -461,16 +466,17 @@ export default function Home() {
                 <Input type="number" min={1} max={selectedProduct.stock} />
               </Form.Item>
 
-              <Form.Item
-                label="Modo de Pago"
-                name="modo_pago"
-                rules={[{ required: true, message: 'Por favor seleccione el modo de pago' }]}
-              >
-                <Select>
-                  <Option value="efectivo">Efectivo</Option>
-                  <Option value="digital">Digital</Option>
-                </Select>
-              </Form.Item>
+                                 <Form.Item
+                     label="Modo de Pago"
+                     name="modo_pago"
+                     rules={[{ required: true, message: 'Por favor seleccione el modo de pago' }]}
+                   >
+                     <Select>
+                       <Option value="efectivo">Efectivo</Option>
+                       <Option value="digital">Digital</Option>
+                       <Option value="bonanza">Bonanza (Gratis)</Option>
+                     </Select>
+                   </Form.Item>
 
               <Form.Item>
                 <Button

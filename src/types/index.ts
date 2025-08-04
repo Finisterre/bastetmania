@@ -16,7 +16,7 @@ export interface Venta {
   cantidad: number
   precio_unitario: number
   total: number
-  modo_pago: 'efectivo' | 'digital'
+  modo_pago: 'efectivo' | 'digital' | 'bonanza'
   fecha_venta: string
   created_at: string
   es_ticket?: boolean
@@ -41,7 +41,7 @@ export interface VentaTicket {
   cantidad: number
   precio_unitario: number
   total: number
-  modo_pago: 'efectivo' | 'digital'
+  modo_pago: 'efectivo' | 'digital' | 'bonanza'
   fecha_venta: string
   es_ticket: boolean
   created_at: string

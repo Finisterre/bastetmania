@@ -13,7 +13,7 @@ export default function Navigation() {
     {
       key: '/',
       icon: <HomeOutlined />,
-      label: 'Vender',
+      label: 'Cantina',
       onClick: () => {
         setDrawerVisible(false)
         window.location.href = '/'
