@@ -263,7 +263,16 @@ export default function Home() {
             showIcon
             className="mb-6"
             action={
-              <Button size="small" onClick={cargarProductos}>
+              <Button 
+                size="small" 
+                onClick={cargarProductos}
+                style={{
+                  backgroundColor: '#1890ff',
+                  borderColor: '#1890ff',
+                  color: 'white',
+                  fontWeight: '500'
+                }}
+              >
                 Reintentar
               </Button>
             }

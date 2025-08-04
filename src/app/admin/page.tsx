@@ -337,7 +337,16 @@ export default function AdminProductos() {
             showIcon
             className="mb-6"
             action={
-              <Button size="small" onClick={cargarProductos}>
+              <Button 
+                size="small" 
+                onClick={cargarProductos}
+                style={{
+                  backgroundColor: '#1890ff',
+                  borderColor: '#1890ff',
+                  color: 'white',
+                  fontWeight: '500'
+                }}
+              >
                 Reintentar
               </Button>
             }
@@ -496,7 +505,15 @@ export default function AdminProductos() {
 
             <Form.Item className="mb-0">
               <div className="flex justify-end space-x-2">
-                <Button onClick={() => setModalVisible(false)}>
+                <Button 
+                  onClick={() => setModalVisible(false)}
+                  style={{
+                    backgroundColor: '#ffffff',
+                    borderColor: '#d9d9d9',
+                    color: '#000000',
+                    fontWeight: '500'
+                  }}
+                >
                   Cancelar
                 </Button>
                                  <Button
