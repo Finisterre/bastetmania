@@ -226,8 +226,7 @@ export default function Home() {
       key: 'Bebidas',
       label: (
         <span>
-          <TrophyOutlined style={{ marginRight: 4 }} />
-    
+          <span className="mr-2 text-lg">🍺</span>
           Bebidas
           <Badge count={contarProductosPorCategoria('Bebidas')} style={{ marginLeft: 8 }} />
         </span>
@@ -238,7 +237,7 @@ export default function Home() {
       key: 'Comida',
       label: (
         <span>
-          <AppleOutlined style={{ marginRight: 4 }} />
+          <span className="mr-2 text-lg">🍕</span>
           Comida
           <Badge count={contarProductosPorCategoria('Comida')} style={{ marginLeft: 8 }} />
         </span>
@@ -250,7 +249,10 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-7xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8">Administrador de Compras - Bar</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-8">
+          <span className="mr-3 text-4xl">🐱</span>
+          Bastetmania
+        </h1>
         
         {/* Mostrar error si existe */}
         {error && (
@@ -357,7 +359,12 @@ export default function Home() {
                 key={producto.id}
                 title={
                   <div className="flex items-center justify-between">
-                    <span>{producto.nombre}</span>
+                    <div className="flex items-center">
+                      <span className="mr-2 text-lg">
+                        {producto.categoria === 'Bebidas' ? '🍺' : '🍕'}
+                      </span>
+                      <span>{producto.nombre}</span>
+                    </div>
                     <Badge 
                       count={producto.categoria} 
                       style={{ 

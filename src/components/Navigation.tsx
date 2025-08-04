@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { Menu, Button, Drawer } from 'antd'
-import { ShoppingCartOutlined, HistoryOutlined, HomeOutlined, MenuOutlined, CloseOutlined } from '@ant-design/icons'
+import { ShoppingCartOutlined, HistoryOutlined, HomeOutlined, MenuOutlined, CloseOutlined, SettingOutlined } from '@ant-design/icons'
 import { usePathname } from 'next/navigation'
 
 export default function Navigation() {
@@ -26,6 +26,15 @@ export default function Navigation() {
       onClick: () => {
         setDrawerVisible(false)
         window.location.href = '/historial'
+      }
+    },
+    {
+      key: '/admin',
+      icon: <SettingOutlined />,
+      label: 'Administrar Productos',
+      onClick: () => {
+        setDrawerVisible(false)
+        window.location.href = '/admin'
       }
     },
   ]
