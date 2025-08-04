@@ -16,8 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Administrador de Compras - Bar",
-  description: "Sistema de administración de compras para bar",
+  title: "Bastetmania - Bar",
+  description: "Vendemos Comida, Bebidas y más... 🐱",
 };
 
 export default function RootLayout({
