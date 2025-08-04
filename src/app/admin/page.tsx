@@ -231,7 +231,7 @@ export default function AdminProductos() {
     {
       title: 'Acciones',
       key: 'acciones',
-             render: (_: any, record: Producto) => (
+             render: (_: unknown, record: Producto) => (
          <Space>
            <Tooltip title="Editar producto">
              <Button

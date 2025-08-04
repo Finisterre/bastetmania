@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Card, Button, Input, Modal, Form, Select, message, Row, Col, Statistic, Spin, Empty, Alert, Tabs, Badge } from 'antd'
-import { ShoppingCartOutlined, DollarOutlined, CreditCardOutlined, LoadingOutlined, TrophyOutlined, AppleOutlined } from '@ant-design/icons'
+import { ShoppingCartOutlined, DollarOutlined, CreditCardOutlined, LoadingOutlined} from '@ant-design/icons'
 import { supabase } from '@/lib/supabase'
 import { Producto, ProductoConVentas } from '@/types'
 import dayjs from 'dayjs'
