@@ -211,7 +211,7 @@ export default function TicketsPage() {
         )}
 
         {/* Estadísticas del día */}
-        <Card className="mb-6">
+        {/* <Card className="mb-6">
           <div className="text-center mb-4">
             <h2 className="text-xl font-semibold text-gray-700">
               Estadísticas del Día - {dayjs().format('DD/MM/YYYY')}
@@ -253,7 +253,7 @@ export default function TicketsPage() {
               />
             </Col>
           </Row>
-        </Card>
+        </Card> */}
 
         {/* Información del Ticket */}
         <Card className="mb-6">
