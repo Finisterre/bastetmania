@@ -107,17 +107,18 @@ export default function AdminProductos() {
     setModalVisible(true)
   }
 
-  const handleEditar = (producto: Producto) => {
-    setEditingProduct(producto)
-    form.setFieldsValue({
-      nombre: producto.nombre,
-      precio: producto.precio,
-      stock: producto.stock,
-      descripcion: producto.descripcion,
-      categoria: producto.categoria
-    })
-    setModalVisible(true)
-  }
+     const handleEditar = (producto: Producto) => {
+     setEditingProduct(producto)
+     form.setFieldsValue({
+       nombre: producto.nombre,
+       precio: producto.precio,
+       precio_costo: producto.precio_costo,
+       stock: producto.stock,
+       descripcion: producto.descripcion,
+       categoria: producto.categoria
+     })
+     setModalVisible(true)
+   }
 
   const handleEliminar = async (id: number) => {
     try {
@@ -190,18 +191,19 @@ export default function AdminProductos() {
       setSubmitLoading(true)
 
       if (editingProduct) {
-                 // Actualizar producto existente
-         const { error } = await supabase
-           .from('productos')
-           .update({
-             nombre: values.nombre,
-             precio: values.precio,
-             stock: values.stock,
-             descripcion: values.descripcion,
-             categoria: values.categoria,
-             updated_at: new Date().toISOString()
-           })
-           .eq('id', editingProduct.id)
+                          // Actualizar producto existente
+          const { error } = await supabase
+            .from('productos')
+            .update({
+              nombre: values.nombre,
+              precio: values.precio,
+              precio_costo: values.precio_costo,
+              stock: values.stock,
+              descripcion: values.descripcion,
+              categoria: values.categoria,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', editingProduct.id)
 
         if (error) {
           throw error
@@ -209,16 +211,17 @@ export default function AdminProductos() {
 
         message.success('Producto actualizado correctamente')
       } else {
-                 // Crear nuevo producto
-         const { error } = await supabase
-           .from('productos')
-           .insert({
-             nombre: values.nombre,
-             precio: values.precio,
-             stock: values.stock,
-             descripcion: values.descripcion,
-             categoria: values.categoria
-           })
+                          // Crear nuevo producto
+          const { error } = await supabase
+            .from('productos')
+            .insert({
+              nombre: values.nombre,
+              precio: values.precio,
+              precio_costo: values.precio_costo,
+              stock: values.stock,
+              descripcion: values.descripcion,
+              categoria: values.categoria
+            })
 
         if (error) {
           throw error
@@ -247,13 +250,20 @@ export default function AdminProductos() {
       render: (nombre: string) => <strong>{nombre}</strong>,
       sorter: (a: Producto, b: Producto) => a.nombre.localeCompare(b.nombre),
     },
-    {
-      title: 'Precio',
-      dataIndex: 'precio',
-      key: 'precio',
-             render: (precio: number) => <span className="text-green-600 font-semibold">${precio.toLocaleString('es-AR')}</span>,
-      sorter: (a: Producto, b: Producto) => a.precio - b.precio,
-    },
+         {
+       title: 'Precio Venta',
+       dataIndex: 'precio',
+       key: 'precio',
+              render: (precio: number) => <span className="text-green-600 font-semibold">${precio.toLocaleString('es-AR')}</span>,
+       sorter: (a: Producto, b: Producto) => a.precio - b.precio,
+     },
+     {
+       title: 'Precio Costo',
+       dataIndex: 'precio_costo',
+       key: 'precio_costo',
+       render: (precio_costo: number) => <span className="text-orange-600 font-semibold">${precio_costo.toLocaleString('es-AR')}</span>,
+       sorter: (a: Producto, b: Producto) => a.precio_costo - b.precio_costo,
+     },
          {
        title: 'Stock',
        dataIndex: 'stock',
@@ -566,10 +576,11 @@ export default function AdminProductos() {
             form={form}
             layout="vertical"
             onFinish={handleSubmit}
-            initialValues={{
-              stock: 0,
-              categoria: 'Bebidas'
-            }}
+                         initialValues={{
+               stock: 0,
+               precio_costo: 0,
+               categoria: 'Bebidas'
+             }}
           >
             <Form.Item
               label="Nombre del Producto"
@@ -583,12 +594,12 @@ export default function AdminProductos() {
             </Form.Item>
 
             <Row gutter={16}>
-              <Col span={12}>
+              <Col span={8}>
                 <Form.Item
-                  label="Precio"
+                  label="Precio Venta"
                   name="precio"
                   rules={[
-                    { required: true, message: 'Por favor ingrese el precio' },
+                    { required: true, message: 'Por favor ingrese el precio de venta' },
                     { 
                       validator: (_, value) => {
                         const numValue = Number(value)
@@ -609,30 +620,56 @@ export default function AdminProductos() {
                   />
                 </Form.Item>
               </Col>
-                             <Col span={12}>
-                                   <Form.Item
-                    label="Stock Inicial"
-                    name="stock"
-                    rules={[
-                      { required: true, message: 'Por favor ingrese el stock' },
-                      { 
-                        validator: (_, value) => {
-                          const numValue = Number(value)
-                          if (isNaN(numValue) || numValue < 0) {
-                            return Promise.reject(new Error('El stock debe ser mayor o igual a 0'))
-                          }
-                          return Promise.resolve()
+              <Col span={8}>
+                <Form.Item
+                  label="Precio Costo"
+                  name="precio_costo"
+                  rules={[
+                    { required: true, message: 'Por favor ingrese el precio de costo' },
+                    { 
+                      validator: (_, value) => {
+                        const numValue = Number(value)
+                        if (isNaN(numValue) || numValue < 0) {
+                          return Promise.reject(new Error('El precio de costo debe ser mayor o igual a 0'))
                         }
+                        return Promise.resolve()
                       }
-                    ]}
-                  >
-                    <InputNumber
-                      placeholder="0"
-                      min={0}
-                      style={{ width: '100%' }}
-                    />
-                  </Form.Item>
-               </Col>
+                    }
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="0.00"
+                    min={0}
+                    step={0.01}
+                    style={{ width: '100%' }}
+                    addonBefore="$"
+                  />
+                </Form.Item>
+              </Col>
+              <Col span={8}>
+                <Form.Item
+                  label="Stock Inicial"
+                  name="stock"
+                  rules={[
+                    { required: true, message: 'Por favor ingrese el stock' },
+                    { 
+                      validator: (_, value) => {
+                        const numValue = Number(value)
+                        if (isNaN(numValue) || numValue < 0) {
+                          return Promise.reject(new Error('El stock debe ser mayor o igual a 0'))
+                        }
+                        return Promise.resolve()
+                      }
+                    }
+                  ]}
+                >
+                  <InputNumber
+                    placeholder="0"
+                    min={0}
+                    style={{ width: '100%' }}
+                  />
+                </Form.Item>
+              </Col>
             </Row>
 
                          <Form.Item
