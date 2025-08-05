@@ -324,7 +324,7 @@ export default function HistorialVentas() {
             <Card>
               <Statistic
                 title="Total Ventas Efectivo"
-                value={totalVentasEfectivo}
+                value={" $" + totalVentasEfectivo.toLocaleString('es-AR')}
                 prefix={<DollarOutlined />}
                 valueStyle={{ color: '#3f8600' }}
                 formatter={(value) => value?.toLocaleString('es-AR')}
@@ -335,7 +335,7 @@ export default function HistorialVentas() {
             <Card>
               <Statistic
                 title="Total Ventas Digital"
-                value={totalVentasDigital}
+                value={" $" + totalVentasDigital.toLocaleString('es-AR')}
                 prefix={<CreditCardOutlined />}
                 valueStyle={{ color: '#1890ff' }}
                 formatter={(value) => value?.toLocaleString('es-AR')}
@@ -346,7 +346,7 @@ export default function HistorialVentas() {
             <Card>
               <Statistic
                 title="Total General"
-                value={totalVentas}
+                value={" $" + totalVentas.toLocaleString('es-AR')}
                 prefix={<ShoppingCartOutlined />}
                 valueStyle={{ color: '#722ed1' }}
                 formatter={(value) => value?.toLocaleString('es-AR')}
