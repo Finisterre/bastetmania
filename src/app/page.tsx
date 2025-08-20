@@ -378,7 +378,7 @@ export default function Home() {
                       <span className="mr-2 text-lg">
                         {producto.categoria === 'Bebidas' ? '🍺' : '🍕'}
                       </span>
-                      <span>{producto.nombre}</span>
+                      <div className=" break-words whitespace-normal">{producto.nombre}</div>
                     </div>
                     <Badge 
                       count={producto.categoria} 
